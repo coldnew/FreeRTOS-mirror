@@ -19,3 +19,9 @@ To update the repo, just use
 ```sh
 git svn rebase
 ```
+
+### Deprecate NOTICE
+
+Since [FreeRTOS](https://freertos.org/) now has it's [official mirror](https://github.com/FreeRTOS/FreeRTOS) on github. This project may not maintain any more.
+
+Please use [FreeRTOS Official Mirror](https://github.com/FreeRTOS/FreeRTOS) instead.
