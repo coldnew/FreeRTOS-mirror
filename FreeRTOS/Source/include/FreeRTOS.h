@@ -1,5 +1,5 @@
 /*
- * FreeRTOS Kernel V10.3.0
+ * FreeRTOS Kernel V10.3.1
  * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -456,6 +456,10 @@ hold explicit before calling the code. */
 	#define traceCREATE_COUNTING_SEMAPHORE_FAILED()
 #endif
 
+#ifndef traceQUEUE_SET_SEND
+	#define traceQUEUE_SET_SEND traceQUEUE_SEND
+#endif
+
 #ifndef traceQUEUE_SEND
 	#define traceQUEUE_SEND( pxQueue )
 #endif
@@ -637,7 +641,7 @@ hold explicit before calling the code. */
 #endif
 
 #ifndef traceTASK_NOTIFY_TAKE
-	#define traceTASK_NOTIFY_TAKE()
+	#define traceTASK_NOTIFY_TAKE( uxIndexToWait )
 #endif
 
 #ifndef traceTASK_NOTIFY_WAIT_BLOCK
@@ -645,7 +649,7 @@ hold explicit before calling the code. */
 #endif
 
 #ifndef traceTASK_NOTIFY_WAIT
-	#define traceTASK_NOTIFY_WAIT()
+	#define traceTASK_NOTIFY_WAIT( uxIndexToWait )
 #endif
 
 #ifndef traceTASK_NOTIFY
@@ -832,6 +836,14 @@ hold explicit before calling the code. */
 
 #ifndef configUSE_TASK_NOTIFICATIONS
 	#define configUSE_TASK_NOTIFICATIONS 1
+#endif
+
+#ifndef configTASK_NOTIFICATION_ARRAY_ENTRIES
+	#define configTASK_NOTIFICATION_ARRAY_ENTRIES 1
+#endif
+
+#if configTASK_NOTIFICATION_ARRAY_ENTRIES < 1
+	#error configTASK_NOTIFICATION_ARRAY_ENTRIES must be at least 1
 #endif
 
 #ifndef configUSE_POSIX_ERRNO
@@ -1144,8 +1156,8 @@ typedef struct xSTATIC_TCB
 		struct	_reent	xDummy17;
 	#endif
 	#if ( configUSE_TASK_NOTIFICATIONS == 1 )
-		uint32_t 		ulDummy18;
-		uint8_t 		ucDummy19;
+		uint32_t 		ulDummy18[ configTASK_NOTIFICATION_ARRAY_ENTRIES ];
+		uint8_t 		ucDummy19[ configTASK_NOTIFICATION_ARRAY_ENTRIES ];
 	#endif
 	#if ( tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE != 0 )
 		uint8_t			uxDummy20;
