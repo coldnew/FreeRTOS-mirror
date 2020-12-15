@@ -1,3 +1,13 @@
+Changes between V2.3.0 and V2.3.1 releases:
+	+ Fixed UDP only compilation.
+	+ Added description for functions and variables in Doxygen compatible format.
+	+ Fixed asynchronous DNS lookup which was broken due to changed function
+	  signature of prvParseDNSReply.
+
+Changes between V2.2.2 and V2.3.0 releases:
+	+ Moved FreeRTOS+TCP source code to an independent repository
+	  FreeRTOS/FreeRTOS-Plus-TCP.
+
 Changes between V2.2.1 and V2.2.2 releases:
 	+ Updated the source code to adhere to stricter MISRA compliance.
 
@@ -33,7 +43,7 @@ Changes between V2.0.0 and V2.2.1 releases:
 	  when the ID in the reply comes from the device.
 
 Changes between 180821 and V2.0.0 releases:
-	+ Move the TCP source code from FreeRTOS/FreeRTOS-Labs to FreeRTOS/FreeRTOS 
+	+ Move the TCP source code from FreeRTOS/FreeRTOS-Labs to FreeRTOS/FreeRTOS
 	  repository.
 
 Changes between 160919 and 180821 releases:

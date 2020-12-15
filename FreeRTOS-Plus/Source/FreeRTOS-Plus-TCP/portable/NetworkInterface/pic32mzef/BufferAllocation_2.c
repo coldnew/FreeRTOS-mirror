@@ -129,26 +129,26 @@ static SemaphoreHandle_t xNetworkBufferSemaphore = NULL;
 
 #ifdef PIC32_USE_ETHERNET
 
-    /* PIC32 specific stuff */
-    /* */
+/* PIC32 specific stuff */
+/* */
 
-    /* MAC packet acknowledgment, once MAC is done with it */
-        static bool PIC32_MacPacketAcknowledge( TCPIP_MAC_PACKET * pPkt,
-                                                const void * param );
+/* MAC packet acknowledgment, once MAC is done with it */
+    static bool PIC32_MacPacketAcknowledge( TCPIP_MAC_PACKET * pPkt,
+                                            const void * param );
 
-    /* allocates a MAC packet that holds a data buffer that can be used by both: */
-    /*  - the FreeRTOSIP (NetworkBufferDescriptor_t->pucEthernetBuffer) */
-    /*  - the Harmony MAC driver: TCPIP_MAC_PACKET->pDSeg->segLoad */
-    /* from the beginning of the buffer: */
-    /*      - 4 bytes pointer to the network descriptor (FreeRTOS) */
-    /*      - 4 bytes pointer to the MAC packet (pic32_NetworkInterface.c) */
-    /*      - 2 bytes offset from the MAC packet (Harmony MAC driver: segLoadOffset) */
-    /* */
-    /* NOTE: segLoadLen should NOT include: */
-    /*          - the TCPIP_MAC_FRAME_OFFSET (== ipBUFFER_PADDING which should be == 10!) */
-    /*          - the sizeof(TCPIP_MAC_ETHERNET_HEADER) */
-    /*       These are added by the MAC packet allocation! */
-    /* */
+/* allocates a MAC packet that holds a data buffer that can be used by both: */
+/*  - the FreeRTOSIP (NetworkBufferDescriptor_t->pucEthernetBuffer) */
+/*  - the Harmony MAC driver: TCPIP_MAC_PACKET->pDSeg->segLoad */
+/* from the beginning of the buffer: */
+/*      - 4 bytes pointer to the network descriptor (FreeRTOS) */
+/*      - 4 bytes pointer to the MAC packet (pic32_NetworkInterface.c) */
+/*      - 2 bytes offset from the MAC packet (Harmony MAC driver: segLoadOffset) */
+/* */
+/* NOTE: segLoadLen should NOT include: */
+/*          - the TCPIP_MAC_FRAME_OFFSET (== ipBUFFER_PADDING which should be == 10!) */
+/*          - the sizeof(TCPIP_MAC_ETHERNET_HEADER) */
+/*       These are added by the MAC packet allocation! */
+/* */
     static uint8_t * PIC32_PktAlloc( uint16_t pktLen,
                                      uint16_t segLoadLen,
                                      TCPIP_MAC_PACKET_ACK_FUNC ackF,
@@ -180,11 +180,11 @@ static SemaphoreHandle_t xNetworkBufferSemaphore = NULL;
 
 
 
-    /* standard PIC32 MAC allocation function for a MAC packet */
-    /* this packet saves room for the FreeRTOS network descriptor */
-    /* at the beginning of the data buffer */
-    /* see NetworkBufferAllocate */
-    /* Note: flags parameter is ignored since that's used in the Harmony stack only */
+/* standard PIC32 MAC allocation function for a MAC packet */
+/* this packet saves room for the FreeRTOS network descriptor */
+/* at the beginning of the data buffer */
+/* see NetworkBufferAllocate */
+/* Note: flags parameter is ignored since that's used in the Harmony stack only */
     TCPIP_MAC_PACKET * PIC32_MacPacketAllocate( uint16_t pktLen,
                                                 uint16_t segLoadLen,
                                                 TCPIP_MAC_PACKET_FLAGS flags )
@@ -196,8 +196,8 @@ static SemaphoreHandle_t xNetworkBufferSemaphore = NULL;
         return pPkt;
     }
 
-    /* standard PIC32 MAC packet acknowledgment */
-    /* function called once MAC is done with it */
+/* standard PIC32 MAC packet acknowledgment */
+/* function called once MAC is done with it */
     static bool PIC32_MacPacketAcknowledge( TCPIP_MAC_PACKET * pPkt,
                                             const void * param )
     {
@@ -208,8 +208,8 @@ static SemaphoreHandle_t xNetworkBufferSemaphore = NULL;
         return false;
     }
 
-    /* associates the current MAC packet with a network descriptor */
-    /* mainly for RX packet */
+/* associates the current MAC packet with a network descriptor */
+/* mainly for RX packet */
     void PIC32_MacAssociate( TCPIP_MAC_PACKET * pRxPkt,
                              NetworkBufferDescriptor_t * pxBufferDescriptor,
                              size_t pktLength )
@@ -221,6 +221,7 @@ static SemaphoreHandle_t xNetworkBufferSemaphore = NULL;
 
         /* make sure this is a properly allocated packet */
         TCPIP_MAC_PACKET ** ppkt = ( TCPIP_MAC_PACKET ** ) ( pPktBuff - PIC32_BUFFER_PKT_PTR_OSSET );
+
         configASSERT( ( ( uint32_t ) ppkt & ( sizeof( uint32_t ) - 1 ) ) == 0 );
 
         if( *ppkt != pRxPkt )
@@ -230,35 +231,36 @@ static SemaphoreHandle_t xNetworkBufferSemaphore = NULL;
 
         /* set the proper descriptor info */
         NetworkBufferDescriptor_t ** ppDcpt = ( NetworkBufferDescriptor_t ** ) ( pPktBuff - ipBUFFER_PADDING );
+
         configASSERT( ( ( uint32_t ) ppDcpt & ( sizeof( uint32_t ) - 1 ) ) == 0 );
         *ppDcpt = pxBufferDescriptor;
     }
 
-    /* debug functionality */
+/* debug functionality */
     void PIC32_MacPacketOrphan( TCPIP_MAC_PACKET * pPkt )
     {
         TCPIP_PKT_PacketFree( pPkt );
         configASSERT( false );
     }
 
-    /* FreeRTOS allocation functions */
+/* FreeRTOS allocation functions */
 
-    /* allocates a buffer that can be used by both: */
-    /*  - the FreeRTOSIP (NetworkBufferDescriptor_t->pucEthernetBuffer) */
-    /*  - the Harmony MAC driver: TCPIP_MAC_PACKET */
-    /*  See PIC32_PktAlloc for details */
-    /* */
-    /* NOTE: reqLength should NOT include the ipBUFFER_PADDING (which should be == 10!) */
-    /*       or the sizeof(TCPIP_MAC_ETHERNET_HEADER) */
-    /*       These are added by the MAC packet allocation! */
-    /* */
+/* allocates a buffer that can be used by both: */
+/*  - the FreeRTOSIP (NetworkBufferDescriptor_t->pucEthernetBuffer) */
+/*  - the Harmony MAC driver: TCPIP_MAC_PACKET */
+/*  See PIC32_PktAlloc for details */
+/* */
+/* NOTE: reqLength should NOT include the ipBUFFER_PADDING (which should be == 10!) */
+/*       or the sizeof(TCPIP_MAC_ETHERNET_HEADER) */
+/*       These are added by the MAC packet allocation! */
+/* */
     uint8_t * NetworkBufferAllocate( size_t reqLength )
     {
         return PIC32_PktAlloc( sizeof( TCPIP_MAC_PACKET ), reqLength, PIC32_MacPacketAcknowledge, 0 );
     }
 
-    /* deallocates a network buffer previously allocated */
-    /* with NetworkBufferAllocate */
+/* deallocates a network buffer previously allocated */
+/* with NetworkBufferAllocate */
     void NetworkBufferFree( uint8_t * pNetworkBuffer )
     {
         if( pNetworkBuffer != 0 )
@@ -382,9 +384,9 @@ uint8_t * pucGetNetworkBuffer( size_t * pxRequestedSizeBytes )
         /* Enough space is left at the start of the buffer to place a pointer to
          * the network buffer structure that references this Ethernet buffer.
          * Return a pointer to the start of the Ethernet buffer itself. */
-		#ifndef PIC32_USE_ETHERNET
-        	pucEthernetBuffer += ipBUFFER_PADDING;
-		#endif /* #ifndef PIC32_USE_ETHERNET */
+        #ifndef PIC32_USE_ETHERNET
+            pucEthernetBuffer += ipBUFFER_PADDING;
+        #endif /* #ifndef PIC32_USE_ETHERNET */
     }
 
     return pucEthernetBuffer;
@@ -421,19 +423,20 @@ NetworkBufferDescriptor_t * pxGetNetworkBufferWithDescriptor( size_t xRequestedS
         xRequestedSizeBytes = baMINIMAL_BUFFER_SIZE;
     }
 
-	#ifdef PIC32_USE_ETHERNET
-	if( xRequestedSizeBytes != 0u )
-    {
-	#endif /* #ifdef PIC32_USE_ETHERNET */
-    	xRequestedSizeBytes += 2u;
+    #ifdef PIC32_USE_ETHERNET
+        if( xRequestedSizeBytes != 0u )
+        {
+    #endif /* #ifdef PIC32_USE_ETHERNET */
+    xRequestedSizeBytes += 2u;
 
-    	if( ( xRequestedSizeBytes & ( sizeof( size_t ) - 1u ) ) != 0u )
-    	{
-        	xRequestedSizeBytes = ( xRequestedSizeBytes | ( sizeof( size_t ) - 1u ) ) + 1u;
-    	}
-	#ifdef PIC32_USE_ETHERNET
+    if( ( xRequestedSizeBytes & ( sizeof( size_t ) - 1u ) ) != 0u )
+    {
+        xRequestedSizeBytes = ( xRequestedSizeBytes | ( sizeof( size_t ) - 1u ) ) + 1u;
     }
-	#endif /* #ifdef PIC32_USE_ETHERNET */
+
+    #ifdef PIC32_USE_ETHERNET
+}
+    #endif /* #ifdef PIC32_USE_ETHERNET */
 
     /* If there is a semaphore available, there is a network buffer available. */
     if( xSemaphoreTake( xNetworkBufferSemaphore, xBlockTimeTicks ) == pdPASS )
@@ -550,7 +553,7 @@ void vReleaseNetworkBufferAndDescriptor( NetworkBufferDescriptor_t * const pxNet
      */
     if( xListItemAlreadyInFreeList == pdFALSE )
     {
-        if ( xSemaphoreGive( xNetworkBufferSemaphore ) == pdTRUE )
+        if( xSemaphoreGive( xNetworkBufferSemaphore ) == pdTRUE )
         {
             iptraceNETWORK_BUFFER_RELEASED( pxNetworkBuffer );
         }
@@ -587,9 +590,9 @@ NetworkBufferDescriptor_t * pxResizeNetworkBufferWithDescriptor( NetworkBufferDe
         xOriginalLength = pxNetworkBuffer->xDataLength;
     #else
         xOriginalLength = pxNetworkBuffer->xDataLength + ipBUFFER_PADDING;
-		xNewSizeBytes = xNewSizeBytes + ipBUFFER_PADDING;
+        xNewSizeBytes = xNewSizeBytes + ipBUFFER_PADDING;
     #endif /* #ifdef PIC32_USE_ETHERNET */
-	
+
     pucBuffer = pucGetNetworkBuffer( &( xNewSizeBytes ) );
 
     if( pucBuffer == NULL )
@@ -600,6 +603,7 @@ NetworkBufferDescriptor_t * pxResizeNetworkBufferWithDescriptor( NetworkBufferDe
     else
     {
         pxNetworkBuffer->xDataLength = xNewSizeBytes;
+
         if( xNewSizeBytes > xOriginalLength )
         {
             xNewSizeBytes = xOriginalLength;
